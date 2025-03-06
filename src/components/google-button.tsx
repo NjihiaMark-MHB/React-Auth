@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import FcGoogle from "@/assets/icons8-google.svg";
+import FcGoogle from "@/assets/icons8-google.svg?react";
 
 interface GoogleButtonProps {
   onClick: () => void;
@@ -17,7 +17,7 @@ function GoogleButton({ onClick }: GoogleButtonProps) {
         "hover:bg-opacity-90 hover:text-gray-300 hover:border-1 hover:border-gray-300 transition"
       )}
     >
-      <img src={FcGoogle} alt="Google" className="w-6 h-6" />
+      <FcGoogle className="w-6 h-6" />
       Sign up with Google
     </Button>
   );
