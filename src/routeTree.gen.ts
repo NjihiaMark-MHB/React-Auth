@@ -11,14 +11,48 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated/route'
 import { Route as IndexImport } from './routes/index'
+import { Route as AuthenticatedSeriesImport } from './routes/_authenticated/series'
+import { Route as AuthenticatedMoviesImport } from './routes/_authenticated/movies'
+import { Route as AuthenticatedHomeImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedBookmarkedImport } from './routes/_authenticated/bookmarked'
 
 // Create/Update Routes
+
+const AuthenticatedRouteRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AuthenticatedSeriesRoute = AuthenticatedSeriesImport.update({
+  id: '/series',
+  path: '/series',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedMoviesRoute = AuthenticatedMoviesImport.update({
+  id: '/movies',
+  path: '/movies',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedHomeRoute = AuthenticatedHomeImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+
+const AuthenticatedBookmarkedRoute = AuthenticatedBookmarkedImport.update({
+  id: '/bookmarked',
+  path: '/bookmarked',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -32,39 +66,115 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/_authenticated/bookmarked': {
+      id: '/_authenticated/bookmarked'
+      path: '/bookmarked'
+      fullPath: '/bookmarked'
+      preLoaderRoute: typeof AuthenticatedBookmarkedImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/movies': {
+      id: '/_authenticated/movies'
+      path: '/movies'
+      fullPath: '/movies'
+      preLoaderRoute: typeof AuthenticatedMoviesImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
+    '/_authenticated/series': {
+      id: '/_authenticated/series'
+      path: '/series'
+      fullPath: '/series'
+      preLoaderRoute: typeof AuthenticatedSeriesImport
+      parentRoute: typeof AuthenticatedRouteImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedBookmarkedRoute: typeof AuthenticatedBookmarkedRoute
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedMoviesRoute: typeof AuthenticatedMoviesRoute
+  AuthenticatedSeriesRoute: typeof AuthenticatedSeriesRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedBookmarkedRoute: AuthenticatedBookmarkedRoute,
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedMoviesRoute: AuthenticatedMoviesRoute,
+  AuthenticatedSeriesRoute: AuthenticatedSeriesRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '': typeof AuthenticatedRouteRouteWithChildren
+  '/bookmarked': typeof AuthenticatedBookmarkedRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/movies': typeof AuthenticatedMoviesRoute
+  '/series': typeof AuthenticatedSeriesRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '': typeof AuthenticatedRouteRouteWithChildren
+  '/bookmarked': typeof AuthenticatedBookmarkedRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/movies': typeof AuthenticatedMoviesRoute
+  '/series': typeof AuthenticatedSeriesRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_authenticated/bookmarked': typeof AuthenticatedBookmarkedRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/movies': typeof AuthenticatedMoviesRoute
+  '/_authenticated/series': typeof AuthenticatedSeriesRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '' | '/bookmarked' | '/home' | '/movies' | '/series'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '' | '/bookmarked' | '/home' | '/movies' | '/series'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/_authenticated/bookmarked'
+    | '/_authenticated/home'
+    | '/_authenticated/movies'
+    | '/_authenticated/series'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +187,37 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/"
+        "/",
+        "/_authenticated"
       ]
     },
     "/": {
       "filePath": "index.tsx"
+    },
+    "/_authenticated": {
+      "filePath": "_authenticated/route.tsx",
+      "children": [
+        "/_authenticated/bookmarked",
+        "/_authenticated/home",
+        "/_authenticated/movies",
+        "/_authenticated/series"
+      ]
+    },
+    "/_authenticated/bookmarked": {
+      "filePath": "_authenticated/bookmarked.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/home": {
+      "filePath": "_authenticated/home.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/movies": {
+      "filePath": "_authenticated/movies.tsx",
+      "parent": "/_authenticated"
+    },
+    "/_authenticated/series": {
+      "filePath": "_authenticated/series.tsx",
+      "parent": "/_authenticated"
     }
   }
 }
