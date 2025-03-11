@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Link } from "@tanstack/react-router";
+import { Link, useMatch } from "@tanstack/react-router";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
@@ -160,11 +160,17 @@ export const SidebarLink = ({
   className?: string;
 }) => {
   const { open, animate } = useSidebar();
+  const isActive = useMatch({
+    //@ts-ignore
+    from: `/_authenticated/${link.href}`,
+    shouldThrow: false,
+  });
   return (
     <Link
       to={link.href}
       className={cn(
         "flex items-center justify-start gap-2 group/sidebar py-2 group",
+        isActive && "sidenav",
         className
       )}
     >
@@ -174,7 +180,10 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0 group-hover:text-red-500"
+        className={cn(
+          "text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0 group-hover:text-red-500",
+          "group-[.sidenav]:text-white"
+        )}
       >
         {link.label}
       </motion.span>

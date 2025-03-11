@@ -18,28 +18,36 @@ function RouteComponent() {
     {
       label: "Home",
       href: "home",
-      icon: <Home className="group-hover:fill-red-500" />,
+      icon: (
+        <Home className="group-hover:fill-red-500 group-[.sidenav]:fill-white" />
+      ),
     },
     {
       label: "Movies",
       href: "movies",
-      icon: <Movies className="group-hover:fill-red-500" />,
+      icon: (
+        <Movies className="group-hover:fill-red-500 group-[.sidenav]:fill-white" />
+      ),
     },
     {
       label: "Tv Series",
       href: "series",
-      icon: <Tv className="group-hover:fill-red-500" />,
+      icon: (
+        <Tv className="group-hover:fill-red-500 group-[.sidenav]:fill-white" />
+      ),
     },
     {
       label: "Bookmarked",
       href: "bookmarked",
-      icon: <Bookmark className="group-hover:fill-red-500" />,
+      icon: (
+        <Bookmark className="group-hover:fill-red-500 group-[.sidenav]:fill-white" />
+      ),
     },
     {
       label: "Logout",
       href: "#",
       icon: (
-        <LogOut className="text-slate-500 h-5 w-5 flex-shrink-0 group-hover:text-red-500" />
+        <LogOut className="text-slate-500 h-5 w-5 flex-shrink-0 group-hover:text-red-500 group-[.sidenav]:text-white" />
       ),
     },
   ];
