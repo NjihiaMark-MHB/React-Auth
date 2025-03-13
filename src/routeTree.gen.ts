@@ -11,8 +11,11 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as StyleGuideImport } from './routes/style-guide'
+import { Route as LoginRouteImport } from './routes/_login/route'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated/route'
-import { Route as IndexImport } from './routes/index'
+import { Route as LoginIndexImport } from './routes/_login/index'
+import { Route as LoginSignUpImport } from './routes/_login/sign-up'
 import { Route as AuthenticatedSeriesImport } from './routes/_authenticated/series'
 import { Route as AuthenticatedMoviesImport } from './routes/_authenticated/movies'
 import { Route as AuthenticatedHomeImport } from './routes/_authenticated/home'
@@ -20,15 +23,32 @@ import { Route as AuthenticatedBookmarkedImport } from './routes/_authenticated/
 
 // Create/Update Routes
 
+const StyleGuideRoute = StyleGuideImport.update({
+  id: '/style-guide',
+  path: '/style-guide',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LoginRouteRoute = LoginRouteImport.update({
+  id: '/_login',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const AuthenticatedRouteRoute = AuthenticatedRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRoute,
 } as any)
 
-const IndexRoute = IndexImport.update({
+const LoginIndexRoute = LoginIndexImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => LoginRouteRoute,
+} as any)
+
+const LoginSignUpRoute = LoginSignUpImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => LoginRouteRoute,
 } as any)
 
 const AuthenticatedSeriesRoute = AuthenticatedSeriesImport.update({
@@ -59,18 +79,25 @@ const AuthenticatedBookmarkedRoute = AuthenticatedBookmarkedImport.update({
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
       fullPath: ''
       preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/_login': {
+      id: '/_login'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRoute
+    }
+    '/style-guide': {
+      id: '/style-guide'
+      path: '/style-guide'
+      fullPath: '/style-guide'
+      preLoaderRoute: typeof StyleGuideImport
       parentRoute: typeof rootRoute
     }
     '/_authenticated/bookmarked': {
@@ -101,6 +128,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSeriesImport
       parentRoute: typeof AuthenticatedRouteImport
     }
+    '/_login/sign-up': {
+      id: '/_login/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof LoginSignUpImport
+      parentRoute: typeof LoginRouteImport
+    }
+    '/_login/': {
+      id: '/_login/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof LoginIndexImport
+      parentRoute: typeof LoginRouteImport
+    }
   }
 }
 
@@ -123,58 +164,100 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface LoginRouteRouteChildren {
+  LoginSignUpRoute: typeof LoginSignUpRoute
+  LoginIndexRoute: typeof LoginIndexRoute
+}
+
+const LoginRouteRouteChildren: LoginRouteRouteChildren = {
+  LoginSignUpRoute: LoginSignUpRoute,
+  LoginIndexRoute: LoginIndexRoute,
+}
+
+const LoginRouteRouteWithChildren = LoginRouteRoute._addFileChildren(
+  LoginRouteRouteChildren,
+)
+
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '': typeof AuthenticatedRouteRouteWithChildren
+  '': typeof LoginRouteRouteWithChildren
+  '/style-guide': typeof StyleGuideRoute
   '/bookmarked': typeof AuthenticatedBookmarkedRoute
   '/home': typeof AuthenticatedHomeRoute
   '/movies': typeof AuthenticatedMoviesRoute
   '/series': typeof AuthenticatedSeriesRoute
+  '/sign-up': typeof LoginSignUpRoute
+  '/': typeof LoginIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '': typeof AuthenticatedRouteRouteWithChildren
+  '/style-guide': typeof StyleGuideRoute
   '/bookmarked': typeof AuthenticatedBookmarkedRoute
   '/home': typeof AuthenticatedHomeRoute
   '/movies': typeof AuthenticatedMoviesRoute
   '/series': typeof AuthenticatedSeriesRoute
+  '/sign-up': typeof LoginSignUpRoute
+  '/': typeof LoginIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
-  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_login': typeof LoginRouteRouteWithChildren
+  '/style-guide': typeof StyleGuideRoute
   '/_authenticated/bookmarked': typeof AuthenticatedBookmarkedRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/movies': typeof AuthenticatedMoviesRoute
   '/_authenticated/series': typeof AuthenticatedSeriesRoute
+  '/_login/sign-up': typeof LoginSignUpRoute
+  '/_login/': typeof LoginIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/bookmarked' | '/home' | '/movies' | '/series'
+  fullPaths:
+    | ''
+    | '/style-guide'
+    | '/bookmarked'
+    | '/home'
+    | '/movies'
+    | '/series'
+    | '/sign-up'
+    | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/bookmarked' | '/home' | '/movies' | '/series'
+  to:
+    | ''
+    | '/style-guide'
+    | '/bookmarked'
+    | '/home'
+    | '/movies'
+    | '/series'
+    | '/sign-up'
+    | '/'
   id:
     | '__root__'
-    | '/'
     | '/_authenticated'
+    | '/_login'
+    | '/style-guide'
     | '/_authenticated/bookmarked'
     | '/_authenticated/home'
     | '/_authenticated/movies'
     | '/_authenticated/series'
+    | '/_login/sign-up'
+    | '/_login/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  LoginRouteRoute: typeof LoginRouteRouteWithChildren
+  StyleGuideRoute: typeof StyleGuideRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  LoginRouteRoute: LoginRouteRouteWithChildren,
+  StyleGuideRoute: StyleGuideRoute,
 }
 
 export const routeTree = rootRoute
@@ -187,12 +270,10 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/",
-        "/_authenticated"
+        "/_authenticated",
+        "/_login",
+        "/style-guide"
       ]
-    },
-    "/": {
-      "filePath": "index.tsx"
     },
     "/_authenticated": {
       "filePath": "_authenticated/route.tsx",
@@ -202,6 +283,16 @@ export const routeTree = rootRoute
         "/_authenticated/movies",
         "/_authenticated/series"
       ]
+    },
+    "/_login": {
+      "filePath": "_login/route.tsx",
+      "children": [
+        "/_login/sign-up",
+        "/_login/"
+      ]
+    },
+    "/style-guide": {
+      "filePath": "style-guide.tsx"
     },
     "/_authenticated/bookmarked": {
       "filePath": "_authenticated/bookmarked.tsx",
@@ -218,6 +309,14 @@ export const routeTree = rootRoute
     "/_authenticated/series": {
       "filePath": "_authenticated/series.tsx",
       "parent": "/_authenticated"
+    },
+    "/_login/sign-up": {
+      "filePath": "_login/sign-up.tsx",
+      "parent": "/_login"
+    },
+    "/_login/": {
+      "filePath": "_login/index.tsx",
+      "parent": "/_login"
     }
   }
 }

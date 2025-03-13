@@ -3,11 +3,11 @@ import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/custom-input";
 import { GoogleButton } from "@/components/google-button";
 
-export const Route = createFileRoute("/")({
-  component: App,
+export const Route = createFileRoute("/style-guide")({
+  component: RouteComponent,
 });
 
-function App() {
+function RouteComponent() {
   return (
     <div className="flex gap-3 flex-col content-center  flex-wrap justify-center min-h-screen">
       <h1>Welcome to React + TanStack</h1>
@@ -17,7 +17,7 @@ function App() {
       <p>Afro house Mixes</p>
       <p className="body-small">Some minified text</p>
       <p className="text-amber-200">
-        Edit <code>src/routes/index.tsx</code> and save to reload.
+        Edit src/routes/index.tsx and save to reload.
       </p>
       <div className="flex gap-4 mt-4 mb-4">
         <div className="w-[100px] h-[100px] bg-red-500"></div>
