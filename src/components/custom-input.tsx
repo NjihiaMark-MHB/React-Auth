@@ -3,23 +3,12 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
-interface CustomInputProps {
+interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
   error?: string;
-  type?: string;
 }
 
-function CustomInput({
-  label,
-  value,
-  onChange,
-  placeholder,
-  error,
-  type,
-}: CustomInputProps) {
+function CustomInput({ label, error, value, ...props }: CustomInputProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
@@ -29,11 +18,9 @@ function CustomInput({
       </Label>
       <Input
         value={value}
-        onChange={(e) => onChange(e.target.value)}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
-        placeholder={placeholder}
-        type={type}
+        {...props}
         className={cn(
           "border-0 rounded-none border-r-0 border-b-2 bg-transparent text-white px-0 focus:outline-none transition-all focus-visible:border-0 focus-visible:border-b-2 focus-visible:border-b-white focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:ring-offset-transparent py-0 mt-2 pb-[18px]",
           isFocused
