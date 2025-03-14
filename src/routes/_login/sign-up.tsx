@@ -4,28 +4,51 @@ import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/custom-input";
 import { useForm, Controller } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export const Route = createFileRoute("/_login/sign-up")({
   component: RouteComponent,
 });
-interface IFormInput {
-  firstname: string;
-  lastname: string;
-  email: string;
-  password: string;
-}
+
+const schema = z.object({
+  firstname: z.string().min(1, { message: "First name is required" }),
+  lastname: z.string().min(1, { message: "Last name is required" }),
+  email: z
+    .string()
+    .min(1, { message: "Email is required" })
+    .email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .regex(/[A-Z]/, {
+      message: "Password must contain at least 1 uppercase letter",
+    })
+    .regex(/[a-z]/, {
+      message: "Password must contain at least 1 lowercase letter",
+    })
+    .regex(/[0-9]/, { message: "Password must contain at least 1 number" })
+    .regex(/[^A-Za-z0-9]/, {
+      message: "Password must contain at least 1 special character",
+    }),
+});
 
 function RouteComponent() {
-  const { control, handleSubmit } = useForm({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       firstname: "",
       lastname: "",
       email: "",
       password: "",
     },
+    resolver: zodResolver(schema),
   });
 
-  const onSubmit: SubmitHandler<IFormInput> = (data) => {
+  const onSubmit: SubmitHandler<z.infer<typeof schema>> = (data) => {
     console.log(data);
   };
   return (
@@ -37,7 +60,11 @@ function RouteComponent() {
             name="firstname"
             control={control}
             render={({ field }) => (
-              <CustomInput label="First Name" {...field} />
+              <CustomInput
+                label="First Name"
+                {...field}
+                error={errors.firstname?.message}
+              />
             )}
           />
         </div>
@@ -45,7 +72,13 @@ function RouteComponent() {
           <Controller
             name="lastname"
             control={control}
-            render={({ field }) => <CustomInput label="Last Name" {...field} />}
+            render={({ field }) => (
+              <CustomInput
+                label="Last Name"
+                {...field}
+                error={errors.lastname?.message}
+              />
+            )}
           />
         </div>
         <div className="mt-6">
@@ -58,6 +91,7 @@ function RouteComponent() {
                 type="email"
                 {...field}
                 autoComplete="new-email"
+                error={errors.email?.message}
               />
             )}
           />
@@ -72,6 +106,7 @@ function RouteComponent() {
                 type="password"
                 {...field}
                 autoComplete="new-password"
+                error={errors.password?.message}
               />
             )}
           />
