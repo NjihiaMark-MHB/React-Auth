@@ -4,36 +4,21 @@ import { Button } from "@/components/ui/button";
 import { CustomInput } from "@/components/custom-input";
 import { useForm, Controller } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
-import { z } from "zod";
+import { createUserSchema } from "@/types/sign-up";
+import type { inferredCreateUserSchema } from "@/types/sign-up";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useCreateUser } from "@/hooks/react-query/create-user";
+import { useLoginUser } from "@/hooks/react-query/login-user";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_login/sign-up")({
   component: RouteComponent,
 });
 
-const schema = z.object({
-  firstname: z.string().min(1, { message: "First name is required" }),
-  lastname: z.string().min(1, { message: "Last name is required" }),
-  email: z
-    .string()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Invalid email address" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
-    .regex(/[A-Z]/, {
-      message: "Password must contain at least 1 uppercase letter",
-    })
-    .regex(/[a-z]/, {
-      message: "Password must contain at least 1 lowercase letter",
-    })
-    .regex(/[0-9]/, { message: "Password must contain at least 1 number" })
-    .regex(/[^A-Za-z0-9]/, {
-      message: "Password must contain at least 1 special character",
-    }),
-});
-
 function RouteComponent() {
+  const navigate = useNavigate();
+  const { mutate: createUser } = useCreateUser();
+  const { mutate: loginUser } = useLoginUser();
   const {
     control,
     handleSubmit,
@@ -45,11 +30,31 @@ function RouteComponent() {
       email: "",
       password: "",
     },
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createUserSchema),
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof schema>> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<inferredCreateUserSchema> = (data) => {
+    createUser(data, {
+      onSuccess: () => {
+        loginUser(
+          {
+            email: data.email,
+            password: data.password,
+          },
+          {
+            onSuccess: () => {
+              navigate({ to: "/home" });
+            },
+            onError: (error) => {
+              console.log("error login in signup user", error);
+            },
+          }
+        );
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    });
   };
   return (
     <AuthenticationCard classname="m-auto mt-[72px] lg:mt-[82px]">

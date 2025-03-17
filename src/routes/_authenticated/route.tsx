@@ -7,6 +7,8 @@ import Bookmark from "@/assets/bookmark.svg?react";
 import { LogOut } from "lucide-react";
 import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { useState } from "react";
+import { useLogoutUser } from "@/hooks/react-query/logout-user";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated")({
   component: RouteComponent,
@@ -14,6 +16,21 @@ export const Route = createFileRoute("/_authenticated")({
 
 function RouteComponent() {
   const [open, setOpen] = useState(false);
+  const { mutate: logout } = useLogoutUser();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout(undefined, {
+      onSuccess: () => {
+        navigate({ to: "/" });
+      },
+      onError: (error) => {
+        console.log("error logging out", error);
+        navigate({ to: "/" });
+      },
+    });
+  };
+
   const links = [
     {
       label: "Home",
@@ -45,6 +62,7 @@ function RouteComponent() {
     },
     {
       label: "Logout",
+      onClick: handleLogout,
       href: "#",
       icon: (
         <LogOut className="text-slate-500 h-5 w-5 flex-shrink-0 group-hover:text-red-500 group-[.sidenav]:text-white" />

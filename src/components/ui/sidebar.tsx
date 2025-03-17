@@ -156,7 +156,7 @@ export const SidebarLink = ({
   link,
   className,
 }: {
-  link: Links;
+  link: Links & { onClick?: () => void };
   className?: string;
 }) => {
   const { open, animate } = useSidebar();
@@ -165,6 +165,35 @@ export const SidebarLink = ({
     from: `/_authenticated/${link.href}`,
     shouldThrow: false,
   });
+  if (link.onClick) {
+    return (
+      <button
+        onClick={link.onClick}
+        className={cn(
+          "flex items-center justify-start gap-2 group/sidebar py-2 group w-full cursor-pointer",
+          className
+        )}
+      >
+        {link.icon}
+        <motion.span
+          animate={{
+            display: animate
+              ? open
+                ? "inline-block"
+                : "none"
+              : "inline-block",
+            opacity: animate ? (open ? 1 : 0) : 1,
+          }}
+          className={cn(
+            "text-neutral-700 dark:text-neutral-200 text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0 group-hover:text-red-500",
+            "group-[.sidenav]:text-white"
+          )}
+        >
+          {link.label}
+        </motion.span>
+      </button>
+    );
+  }
   return (
     <Link
       to={link.href}

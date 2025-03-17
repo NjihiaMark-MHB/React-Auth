@@ -5,33 +5,18 @@ import { CustomInput } from "@/components/custom-input";
 import { useForm, Controller } from "react-hook-form";
 import type { SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { loginSchema } from "@/types/login";
+import type { inferredLoginSchema } from "@/types/login";
+import { useLoginUser } from "@/hooks/react-query/login-user";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_login/")({
   component: App,
 });
 
-const schema = z.object({
-  email: z
-    .string()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Invalid email address" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
-    .regex(/[A-Z]/, {
-      message: "Password must contain at least 1 uppercase letter",
-    })
-    .regex(/[a-z]/, {
-      message: "Password must contain at least 1 lowercase letter",
-    })
-    .regex(/[0-9]/, { message: "Password must contain at least 1 number" })
-    .regex(/[^A-Za-z0-9]/, {
-      message: "Password must contain at least 1 special character",
-    }),
-});
-
 function App() {
+  const navigate = useNavigate();
+  const { mutate: loginUser } = useLoginUser();
   const {
     control,
     handleSubmit,
@@ -41,11 +26,18 @@ function App() {
       email: "",
       password: "",
     },
-    resolver: zodResolver(schema),
+    resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof schema>> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<inferredLoginSchema> = (data) => {
+    loginUser(data, {
+      onSuccess: () => {
+        navigate({ to: "/home" });
+      },
+      onError: (error) => {
+        console.log("error login in signup user", error);
+      },
+    });
   };
 
   return (
