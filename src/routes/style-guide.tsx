@@ -31,7 +31,7 @@ function RouteComponent() {
         <Button variant="secondary">Button</Button>
       </div>
       <div className="flex flex-col gap-4 mt-4 mb-4">
-        <GoogleButton onClick={() => {}} />
+        <GoogleButton onClick={() => {}} label="Sign in with Google" />
         <CustomInput
           label="Input"
           value="Some text"

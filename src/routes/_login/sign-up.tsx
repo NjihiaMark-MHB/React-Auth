@@ -10,6 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateUser } from "@/hooks/react-query/create-user";
 import { useLoginUser } from "@/hooks/react-query/login-user";
 import { useNavigate } from "@tanstack/react-router";
+import { GoogleButton } from "@/components/google-button";
+import { TextDivider } from "@/components/text-divider";
 
 export const Route = createFileRoute("/_login/sign-up")({
   component: RouteComponent,
@@ -19,14 +21,17 @@ function RouteComponent() {
   const navigate = useNavigate();
   const { mutate: createUser } = useCreateUser();
   const { mutate: loginUser } = useLoginUser();
+  const handleGoogleAuth = () => {
+    window.location.href = `${import.meta.env.VITE_SERVER_URL}/auth/google`;
+  };
   const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      firstname: "",
-      lastname: "",
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
     },
@@ -59,29 +64,38 @@ function RouteComponent() {
   return (
     <AuthenticationCard classname="m-auto mt-[72px] lg:mt-[82px]">
       <h1>Sign up</h1>
+      <div className="mt-10">
+        <GoogleButton
+          onClick={() => handleGoogleAuth()}
+          label="Sign up with Google"
+        />
+      </div>
+      <div className="mt-6">
+        <TextDivider text="Or" />
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mt-10">
+        <div className="mt-6">
           <Controller
-            name="firstname"
+            name="firstName"
             control={control}
             render={({ field }) => (
               <CustomInput
                 label="First Name"
                 {...field}
-                error={errors.firstname?.message}
+                error={errors.firstName?.message}
               />
             )}
           />
         </div>
         <div className="mt-6">
           <Controller
-            name="lastname"
+            name="lastName"
             control={control}
             render={({ field }) => (
               <CustomInput
                 label="Last Name"
                 {...field}
-                error={errors.lastname?.message}
+                error={errors.lastName?.message}
               />
             )}
           />

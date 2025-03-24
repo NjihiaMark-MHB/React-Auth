@@ -9,6 +9,8 @@ import { loginSchema } from "@/types/login";
 import type { inferredLoginSchema } from "@/types/login";
 import { useLoginUser } from "@/hooks/react-query/login-user";
 import { useNavigate } from "@tanstack/react-router";
+import { GoogleButton } from "@/components/google-button";
+import { TextDivider } from "@/components/text-divider";
 
 export const Route = createFileRoute("/_login/")({
   component: App,
@@ -17,6 +19,9 @@ export const Route = createFileRoute("/_login/")({
 function App() {
   const navigate = useNavigate();
   const { mutate: loginUser } = useLoginUser();
+  const handleGoogleAuth = () => {
+    window.location.href = `${import.meta.env.VITE_SERVER_URL}/auth/google`;
+  };
   const {
     control,
     handleSubmit,
@@ -34,17 +39,23 @@ function App() {
       onSuccess: () => {
         navigate({ to: "/home" });
       },
-      onError: (error) => {
-        console.log("error login in signup user", error);
-      },
     });
   };
 
   return (
     <AuthenticationCard classname="m-auto mt-[72px] lg:mt-[82px]">
       <h1>Login</h1>
+      <div className="mt-10">
+        <GoogleButton
+          onClick={() => handleGoogleAuth()}
+          label="Sign in with Google"
+        />
+      </div>
+      <div className="mt-6">
+        <TextDivider text="Or" />
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mt-10">
+        <div className="mt-6">
           <Controller
             name="email"
             control={control}
