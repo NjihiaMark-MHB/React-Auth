@@ -9,6 +9,7 @@ import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useLogoutUser } from "@/hooks/react-query/logout-user";
 import { useNavigate } from "@tanstack/react-router";
+import { useAuthActions } from "@/zustand-stores/auth";
 
 export const Route = createFileRoute("/_authenticated")({
   component: RouteComponent,
@@ -16,17 +17,20 @@ export const Route = createFileRoute("/_authenticated")({
 
 function RouteComponent() {
   const [open, setOpen] = useState(false);
+  const { setIsAuthenticated } = useAuthActions();
   const { mutate: logout } = useLogoutUser();
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    //setIsAuthenticated(false);
     logout(undefined, {
       onSuccess: () => {
+        setIsAuthenticated(false); // Move this inside onSuccess
         navigate({ to: "/" });
       },
       onError: (error) => {
         console.log("error logging out", error);
-        navigate({ to: "/" });
+        setIsAuthenticated(false); // Also set false on error
       },
     });
   };
