@@ -1,7 +1,14 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import Logo from "@/assets/logo-1.svg?react";
+import { useAuthStore } from "@/zustand-stores/auth";
 
 export const Route = createFileRoute("/_login")({
+  beforeLoad: () => {
+    const isAuthenticated = useAuthStore.getState().isAuthenticated;
+    if (isAuthenticated) {
+      throw redirect({ to: "/home" });
+    }
+  },
   component: RouteComponent,
 });
 

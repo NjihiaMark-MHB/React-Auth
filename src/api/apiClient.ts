@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useAuthStore } from "@/zustand-stores/auth";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_SERVER_URL,
@@ -14,8 +15,15 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Clear any local auth state if needed
-      window.location.href = "/";
+      useAuthStore.setState({ isAuthenticated: false });
+      
+      // Prevent redirect if already on login or signup pages
+      const publicPaths = ['/', '/sign-up'];
+      const currentPath = window.location.pathname;
+      
+      if (!publicPaths.includes(currentPath)) {
+        window.location.href = "/";
+      }
     }
     return Promise.reject(error);
   }

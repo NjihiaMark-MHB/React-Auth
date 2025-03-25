@@ -12,6 +12,7 @@ import { useLoginUser } from "@/hooks/react-query/login-user";
 import { useNavigate } from "@tanstack/react-router";
 import { GoogleButton } from "@/components/google-button";
 import { TextDivider } from "@/components/text-divider";
+import { useSetIsAuthenticated } from "@/zustand-stores/auth";
 
 export const Route = createFileRoute("/_login/sign-up")({
   component: RouteComponent,
@@ -21,6 +22,7 @@ function RouteComponent() {
   const navigate = useNavigate();
   const { mutate: createUser } = useCreateUser();
   const { mutate: loginUser } = useLoginUser();
+  const setIsAuthenticated = useSetIsAuthenticated();
   const handleGoogleAuth = () => {
     window.location.href = `${import.meta.env.VITE_SERVER_URL}/auth/google`;
   };
@@ -48,6 +50,7 @@ function RouteComponent() {
           },
           {
             onSuccess: () => {
+              setIsAuthenticated(true);
               navigate({ to: "/home" });
             },
             onError: (error) => {

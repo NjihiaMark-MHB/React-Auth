@@ -11,7 +11,7 @@ import { useLoginUser } from "@/hooks/react-query/login-user";
 import { useNavigate } from "@tanstack/react-router";
 import { GoogleButton } from "@/components/google-button";
 import { TextDivider } from "@/components/text-divider";
-import { useAuthActions } from "@/zustand-stores/auth";
+import { useSetIsAuthenticated } from "@/zustand-stores/auth";
 
 export const Route = createFileRoute("/_login/")({
   component: App,
@@ -19,8 +19,8 @@ export const Route = createFileRoute("/_login/")({
 
 function App() {
   const navigate = useNavigate();
+  const setIsAuthenticated = useSetIsAuthenticated();
   const { mutate: loginUser } = useLoginUser();
-  const { setIsAuthenticated } = useAuthActions();
   const handleGoogleAuth = () => {
     window.location.href = `${import.meta.env.VITE_SERVER_URL}/auth/google`;
   };
@@ -37,11 +37,10 @@ function App() {
   });
 
   const onSubmit: SubmitHandler<inferredLoginSchema> = (data) => {
-    console.log("Before login - setIsAuthenticated:", setIsAuthenticated);
     loginUser(data, {
       onSuccess: () => {
-        navigate({ to: "/home" });
         setIsAuthenticated(true);
+        navigate({ to: "/home", replace: true });
       },
     });
   };

@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute } from "@tanstack/react-router";
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 import Logo from "@/assets/logo-1.svg?react";
 import Home from "@/assets/home.svg?react";
 import Movies from "@/assets/movies.svg?react";
@@ -9,28 +9,33 @@ import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useLogoutUser } from "@/hooks/react-query/logout-user";
 import { useNavigate } from "@tanstack/react-router";
-import { useAuthActions } from "@/zustand-stores/auth";
+import { useAuthStore, useSetIsAuthenticated } from "@/zustand-stores/auth";
 
 export const Route = createFileRoute("/_authenticated")({
+  beforeLoad: () => {
+    const isAuthenticated = useAuthStore.getState().isAuthenticated;
+    if (!isAuthenticated) {
+      throw redirect({
+        to: "/",
+        replace: true,
+      });
+    }
+  },
   component: RouteComponent,
 });
 
 function RouteComponent() {
   const [open, setOpen] = useState(false);
-  const { setIsAuthenticated } = useAuthActions();
   const { mutate: logout } = useLogoutUser();
   const navigate = useNavigate();
+  const setIsAuthenticated = useSetIsAuthenticated();
 
   const handleLogout = () => {
     //setIsAuthenticated(false);
     logout(undefined, {
       onSuccess: () => {
-        setIsAuthenticated(false); // Move this inside onSuccess
+        setIsAuthenticated(false);
         navigate({ to: "/" });
-      },
-      onError: (error) => {
-        console.log("error logging out", error);
-        setIsAuthenticated(false); // Also set false on error
       },
     });
   };
