@@ -15,12 +15,12 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      useAuthStore.setState({ isAuthenticated: false });
-      
+      useAuthStore.setState({ isAuthenticated: false, currentUser: null });
+
       // Prevent redirect if already on login or signup pages
-      const publicPaths = ['/', '/sign-up'];
+      const publicPaths = ["/", "/sign-up"];
       const currentPath = window.location.pathname;
-      
+
       if (!publicPaths.includes(currentPath)) {
         window.location.href = "/";
       }

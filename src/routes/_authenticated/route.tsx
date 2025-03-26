@@ -9,7 +9,14 @@ import { Sidebar, SidebarBody, SidebarLink } from "@/components/ui/sidebar";
 import { useState } from "react";
 import { useLogoutUser } from "@/hooks/react-query/logout-user";
 import { useNavigate } from "@tanstack/react-router";
-import { useAuthStore, useSetIsAuthenticated } from "@/zustand-stores/auth";
+import {
+  useAuthStore,
+  useSetCurrentUser,
+  useSetIsAuthenticated,
+  useCurrentUser,
+} from "@/zustand-stores/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { getInitials } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated")({
   beforeLoad: () => {
@@ -29,11 +36,14 @@ function RouteComponent() {
   const { mutate: logout } = useLogoutUser();
   const navigate = useNavigate();
   const setIsAuthenticated = useSetIsAuthenticated();
+  const setCurrentUser = useSetCurrentUser();
+  const currentUser = useCurrentUser();
 
   const handleLogout = () => {
     //setIsAuthenticated(false);
     logout(undefined, {
       onSuccess: () => {
+        setCurrentUser(null);
         setIsAuthenticated(false);
         navigate({ to: "/" });
       },
@@ -100,16 +110,21 @@ function RouteComponent() {
             <div className="flex flex-col items-center">
               <SidebarLink
                 link={{
-                  label: "Manu Arora",
+                  label: `${currentUser?.firstName || ""} ${` ${currentUser?.lastName || ""}`}`,
                   href: "#",
                   icon: (
-                    <img
-                      src="https://assets.aceternity.com/manu.png"
-                      className="h-7 w-7 flex-shrink-0 rounded-full"
-                      width={50}
-                      height={50}
-                      alt="Avatar"
-                    />
+                    <Avatar>
+                      <AvatarImage
+                        src={currentUser?.avatar || ""}
+                        height={50}
+                        width={50}
+                      />
+                      <AvatarFallback className="bg-slate-500">
+                        {getInitials(
+                          `${currentUser?.firstName || ""} ${` ${currentUser?.lastName || ""}`}`
+                        )}
+                      </AvatarFallback>
+                    </Avatar>
                   ),
                 }}
               />
