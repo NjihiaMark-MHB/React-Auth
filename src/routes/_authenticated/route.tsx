@@ -32,6 +32,7 @@ export const Route = createFileRoute("/_authenticated")({
           isAuthenticated: true,
           currentUser: response.data,
         });
+        window.location.href = "/home";
         return;
       } catch (error) {
         console.error("Error setting user data:", error);
@@ -110,7 +111,6 @@ function RouteComponent() {
       ),
     },
   ];
-  console.log(currentUser);
   return (
     <div className="flex h-screen">
       <div className="pt-8 pb-8 pl-8 pr-9">
@@ -138,7 +138,7 @@ function RouteComponent() {
                   icon: (
                     <Avatar>
                       <AvatarImage
-                        src={currentUser?.userAvatar || ""}
+                        src={currentUser?.userAvatar}
                         height={50}
                         width={50}
                       />
