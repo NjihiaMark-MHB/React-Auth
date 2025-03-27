@@ -5,5 +5,5 @@ export type currentUser = {
   lastName: string;
   createdAt: string;
   updatedAt: string;
-  avatar?: string;
+  userAvatar?: string;
 };

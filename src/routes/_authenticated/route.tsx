@@ -17,10 +17,32 @@ import {
 } from "@/zustand-stores/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getInitials } from "@/lib/utils";
+import apiClient from "@/api/apiClient";
 
 export const Route = createFileRoute("/_authenticated")({
-  beforeLoad: () => {
+  beforeLoad: async ({ search }) => {
     const isAuthenticated = useAuthStore.getState().isAuthenticated;
+    const userId = (search as { userId?: string }).userId;
+
+    // Handle Google OAuth callback
+    if (userId && !isAuthenticated) {
+      try {
+        const response = await apiClient.get(`/users/uuid/${userId}`);
+        useAuthStore.setState({
+          isAuthenticated: true,
+          currentUser: response.data,
+        });
+        return;
+      } catch (error) {
+        console.error("Error setting user data:", error);
+        throw redirect({
+          to: "/",
+          replace: true,
+        });
+      }
+    }
+
+    // Regular auth check
     if (!isAuthenticated) {
       throw redirect({
         to: "/",
@@ -88,6 +110,7 @@ function RouteComponent() {
       ),
     },
   ];
+  console.log(currentUser);
   return (
     <div className="flex h-screen">
       <div className="pt-8 pb-8 pl-8 pr-9">
@@ -115,7 +138,7 @@ function RouteComponent() {
                   icon: (
                     <Avatar>
                       <AvatarImage
-                        src={currentUser?.avatar || ""}
+                        src={currentUser?.userAvatar || ""}
                         height={50}
                         width={50}
                       />
